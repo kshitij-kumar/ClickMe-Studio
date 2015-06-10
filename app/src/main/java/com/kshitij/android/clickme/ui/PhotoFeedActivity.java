@@ -1,11 +1,5 @@
 package com.kshitij.android.clickme.ui;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -28,6 +22,12 @@ import com.kshitij.android.clickme.db.ImageDataBaseHelper;
 import com.kshitij.android.clickme.model.ImageDetail;
 import com.kshitij.android.clickme.util.Constants;
 import com.kshitij.android.clickme.util.ContentManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by kshitij.kumar on 09-06-2015.
@@ -95,8 +95,16 @@ public class PhotoFeedActivity extends AppCompatActivity {
 		}
 		case Constants.ACTION_VIEW_PHOTO: {
 			if (resultCode == RESULT_OK) {
-				mAdapter.setData(ContentManager.getInstance().getImageDetails());
-				mAdapter.notifyDataSetChanged();
+				if (mAdapter == null) {
+					mAdapter = new ListAdapter(getApplicationContext(),
+							ContentManager.getInstance().getImageDetails());
+					mListView.setAdapter(mAdapter);
+					mAdapter.notifyDataSetChanged();
+				} else {
+					mAdapter.setData(ContentManager.getInstance()
+							.getImageDetails());
+					mAdapter.notifyDataSetChanged();
+				}
 				mImageFilePath = null;
 			}
 			break;
@@ -130,11 +138,11 @@ public class PhotoFeedActivity extends AppCompatActivity {
 		protected void onPostExecute(List<ImageDetail> imageDetails) {
 			Log.d(TAG, "LoadFeedTask, onPostExecute(), " + imageDetails.size());
 			dissmissLoadingProgress();
-			mAdapter = new ListAdapter(getApplicationContext(), imageDetails);
 			if (mMenuItemCamera != null) {
 				mMenuItemCamera.setVisible(true);
 			}
 			if (imageDetails != null && imageDetails.size() > 0) {
+				mAdapter = new ListAdapter(getApplicationContext(), imageDetails);
 				mAdapter.setData(imageDetails);
 				mListView.setAdapter(mAdapter);
 				mAdapter.notifyDataSetChanged();
