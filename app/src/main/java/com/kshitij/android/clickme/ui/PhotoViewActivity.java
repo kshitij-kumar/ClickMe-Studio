@@ -29,6 +29,8 @@ import com.kshitij.android.clickme.model.ImageDetail;
 import com.kshitij.android.clickme.service.FetchAddressIntentService;
 import com.kshitij.android.clickme.util.Constants;
 
+import java.io.File;
+
 /**
  * Created by kshitij.kumar on 10-06-2015.
  */
@@ -106,7 +108,7 @@ public class PhotoViewActivity extends AppCompatActivity implements
 				if (mSaveImageDetailsTask != null) {
 					mSaveImageDetailsTask.cancel(true);
 				}
-				stopLocationUpdates();
+				deleteTempFile();
 				finish();
 
 			}
@@ -368,6 +370,10 @@ public class PhotoViewActivity extends AppCompatActivity implements
 
 	@Override
 	public void onBackPressed() {
+		if (mSaveImageDetailsTask != null) {
+			mSaveImageDetailsTask.cancel(true);
+		}
+		deleteTempFile();
 		super.onBackPressed();
 	}
 
@@ -377,4 +383,12 @@ public class PhotoViewActivity extends AppCompatActivity implements
 		super.onStop();
 	}
 
+	private void deleteTempFile() {
+		if (mImagePath != null) {
+			File file = new File(mImagePath);
+			if (file.exists()) {
+				file.delete();
+			}
+		}
+	}
 }
